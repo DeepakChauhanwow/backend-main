@@ -236,12 +236,28 @@ module.exports = mongoose.model('Settings', new Schema({
     activity_logs: {type: Boolean, default: false}, // If true then it will store detailed errors with stack in ./log_files/error_log.json file
     encrypt_response: {type: Boolean, default: false},
 
+    is_banner_visible: { type: Boolean, default: false },
+    scheduled_request_pre_booking_days : { type: Number, default: 0 },
+
+    // For Rental Client Subscription
     sub_customer_id: { type: String, default: '' },
     sub_id: { type: String, default: '' },
     sub_price_id: { type: String, default: ''},
     is_rental: { type: Boolean, default: false }, //Note: for internal use (only true when client is rental)
-    is_banner_visible: { type: Boolean, default: false },
-    scheduled_request_pre_booking_days : { type: Number, default: 0 }
+    rental_subscription_type: { type: Number, default: 0 }, // Defualt Stripe(0) and For Memo_Payment(1) //Note: We need to set this manually
+    rental_payment_link: { type: String, default: ''},
+    rental_amount: { type: Number, default: 0 },
+    rental_processing_fee: { type: Number, default: 0 },
+    rental_amount_currency: { type: String, default: '' },
+    rental_subscription_frequency: { type: String, default: '' },
+    rental_title: { type: String, default: '' },
+    rental_description: { type: String, default: '' },
+
+    //WSAL API CREDENTIALS
+    is_wsal_service_use: { type: Boolean, default: false },
+    wsal_client_id: {type: String, default: '' },
+    wsal_app_id: {type: String, default: '' },
+    wsal_app_key: {type: String, default: '' },
 },{
     strict: true,
     timestamps: {

@@ -1,0 +1,79 @@
+version: '3.8'
+
+services:
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: server
+    restart: always
+    ports:
+      - "5000:5000"
+    environment:
+      - MONGODB_URL=mongodb+srv://WOW:g0pzgGsHDx9VXOAO@cluster0.ii2uy.mongodb.net/WOW_TAXI
+    depends_on:
+      - mongodb
+
+  history-earning:
+    build:
+      context: ./history-earning
+      dockerfile: Dockerfile
+    container_name: history-earning
+    restart: always
+    ports:
+      - "5001:5001"
+    environment:
+      - MONGODB_URL=mongodb+srv://WOW:g0pzgGsHDx9VXOAO@cluster0.ii2uy.mongodb.net/WOW_TAXI
+    depends_on:
+      - mongodb
+
+  payments:
+    build:
+      context: ./payments
+      dockerfile: Dockerfile
+    container_name: payments
+    restart: always
+    ports:
+      - "5002:5002"
+    environment:
+      - MONGODB_URL=mongodb+srv://WOW:g0pzgGsHDx9VXOAO@cluster0.ii2uy.mongodb.net/WOW_TAXI
+    depends_on:
+      - mongodb
+
+  mass-notification:
+    build:
+      context: ./mass_notification
+      dockerfile: Dockerfile
+    container_name: mass-notification
+    restart: always
+    ports:
+      - "5003:5003"
+    environment:
+      - MONGODB_URL=mongodb+srv://WOW:g0pzgGsHDx9VXOAO@cluster0.ii2uy.mongodb.net/WOW_TAXI
+    depends_on:
+      - mongodb
+
+  whatsapp-messenger:
+    build:
+      context: ./whatspp_messenger
+      dockerfile: Dockerfile
+    container_name: whatsapp-messenger
+    restart: always
+    ports:
+      - "5004:5004"
+    environment:
+      - MONGODB_URL=mongodb+srv://WOW:g0pzgGsHDx9VXOAO@cluster0.ii2uy.mongodb.net/WOW_TAXI
+    depends_on:
+      - mongodb
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+
+volumes:
+  mongodb_data:

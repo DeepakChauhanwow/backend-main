@@ -1,0 +1,56 @@
+version: '3'
+services:
+  history-earning:
+    build: ./history-earning
+    ports:
+      - "5001:5001"
+    restart: always
+    container_name: history-earning
+    working_dir: /app
+    volumes:
+      - ./history-earning:/app
+    command: ["node", "server.js"]
+
+  server:
+    build: ./server
+    ports:
+      - "5000:5000"
+    restart: always
+    container_name: server
+    working_dir: /app
+    volumes:
+      - ./server:/app
+    command: ["node", "server.js"]
+
+  mass_notification:
+    build: ./mass_notification
+    ports:
+      - "5003:5003"
+    restart: always
+    container_name: mass-notification
+    working_dir: /app
+    volumes:
+      - ./mass_notification:/app
+    command: ["node", "server.js"]
+
+  payments:
+    build: ./payments
+    ports:
+      - "5002:5002"
+    restart: always
+    container_name: payments
+    working_dir: /app
+    volumes:
+      - ./payments:/app
+    command: ["node", "server.js"]
+
+  whatspp_messenger:
+    build: ./whatspp_messenger
+    ports:
+      - "5004:5004"
+    restart: always
+    container_name: whatspp-messenger
+    working_dir: /app
+    volumes:
+      - ./whatspp_messenger:/app
+    command: ["node", "server.js"]
