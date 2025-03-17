@@ -1,9 +1,12 @@
 name: Deploy backend-main to Wow Server
 
+#on:
+ # push:
+  #  branches:
+   #   - main  # Sirf 'main' branch pe push hone par chalega
+
 on:
-  push:
-    branches:
-      - main  # Sirf 'main' branch pe push hone par chalega
+  workflow_dispatch:  # Manually trigger only
 
 jobs:
   deploy:
