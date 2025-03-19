@@ -54,7 +54,7 @@ jobs:
 
             # Restart all PM2 processes
             echo "Restarting all PM2 services"
-            pm2 restart all
+            pm2 restart server payments whatsup notification history
 
           EOF
         env:
