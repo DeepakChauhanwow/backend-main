@@ -1,7 +1,7 @@
 const fs = require('fs');
 exports.extractCodeSnippetsFromStack = function(stack, depth) {
     // Extract file paths from the stack
-    const filePaths = stack.match(/\(([^)]*+)\)/g);
+    const filePaths = stack.match(/\(([^)]*)\)/g);
     let codeSnippets = [];
   
     // Read the file and extract relevant code snippets for the first two files
