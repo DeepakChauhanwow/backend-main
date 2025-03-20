@@ -1,4 +1,4 @@
-name: Docker-Compose
+name: Deploy backend-main to Wow Server
 
 on:
   workflow_dispatch:  # Manually trigger only
@@ -26,6 +26,9 @@ jobs:
           ssh ubuntu@$SERVER_IP << 'EOF'
             set -e  # Stop execution if any command fails
 
+            echo "Configuring Git safe directory..."
+            git config --global --add safe.directory /var/www/html/wow/backend-main
+
             echo "Navigating to backend-main..."
             cd /var/www/html/wow/backend-main
 
@@ -34,30 +37,28 @@ jobs:
             git reset --hard origin/main
             git pull origin main
 
-            # List of sub-services inside backend-main
-            services=("server" "history-earning" "payments" "mass_notification" "whatspp_messenger")
+            # List of backend services inside backend-main
+            services=("history-earning" "mass_notification" "payments" "server" "whatspp_messenger")
 
             echo "Installing dependencies for each service..."
             for service in "${services[@]}"; do
               if [ -d "$service" ]; then
-                echo "Installing dependencies in $service..."
+                echo "Installing dependencies in $service"
                 cd "$service"
                 npm install --legacy-peer-deps
                 cd ..
               else
-                echo "Skipping $service (directory not found)"
+                echo "Skipping $service (not found)"
               fi
             done
 
-            echo "Building and running services with Docker Compose..."
-            docker-compose down  # Stop any running containers
-            docker-compose build  # Build fresh images
-            docker-compose up -d  # Start containers in detached mode
+            echo "Building and running Docker Compose..."
+            docker-compose down
+            docker-compose build
+            docker-compose up -d
 
-            echo "Setting correct permissions for backend-main..."
-            sudo chmod -R 775 /var/www/html/wow/backend-main/
+            echo "Deployment completed successfully! 🚀"
 
-            echo "Deployment completed successfully!"
           EOF
         env:
           SERVER_IP: ${{ secrets.SERVER_IP }}
