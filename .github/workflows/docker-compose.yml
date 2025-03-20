@@ -1,4 +1,4 @@
-name: Deploy backend-main to Wow Server
+name: Docker-Compose
 
 on:
   workflow_dispatch:  # Manually trigger only
