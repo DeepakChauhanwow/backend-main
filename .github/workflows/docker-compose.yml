@@ -1,0 +1,63 @@
+name: Deploy backend-main to Wow Server
+
+on:
+  workflow_dispatch:  # Manually trigger only
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup SSH Key
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H $SERVER_IP >> ~/.ssh/known_hosts
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SERVER_IP: ${{ secrets.SERVER_IP }}
+
+      - name: Deploy backend-main on Server
+        run: |
+          ssh ubuntu@$SERVER_IP << 'EOF'
+            set -e  # Stop execution if any command fails
+
+            echo "Navigating to backend-main..."
+            cd /var/www/html/wow/backend-main
+
+            echo "Pulling latest code from main branch..."
+            git fetch origin main
+            git reset --hard origin/main
+            git pull origin main
+
+            # List of sub-services inside backend-main
+            services=("server" "history-earning" "payments" "mass_notification" "whatspp_messenger")
+
+            echo "Installing dependencies for each service..."
+            for service in "${services[@]}"; do
+              if [ -d "$service" ]; then
+                echo "Installing dependencies in $service..."
+                cd "$service"
+                npm install --legacy-peer-deps
+                cd ..
+              else
+                echo "Skipping $service (directory not found)"
+              fi
+            done
+
+            echo "Building and running services with Docker Compose..."
+            docker-compose down  # Stop any running containers
+            docker-compose build  # Build fresh images
+            docker-compose up -d  # Start containers in detached mode
+
+            echo "Setting correct permissions for backend-main..."
+            sudo chmod -R 775 /var/www/html/wow/backend-main/
+
+            echo "Deployment completed successfully!"
+          EOF
+        env:
+          SERVER_IP: ${{ secrets.SERVER_IP }}
